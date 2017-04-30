@@ -8,5 +8,21 @@
     "fs-extra": "^3.0.0",
     "mkdirp": "^0.5.1",
     "yauzl": "^2.7.0"
-  }
+  },
+  "description": "## use",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nate-river/ebook-parser.git"
+  },
+  "author": "nate-river",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nate-river/ebook-parser/issues"
+  },
+  "homepage": "https://github.com/nate-river/ebook-parser#readme",
+  "keywords": [
+    "ebook",
+    "parser"
+  ]
 }
