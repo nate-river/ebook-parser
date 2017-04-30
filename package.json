@@ -1,0 +1,12 @@
+{
+  "name": "ebook-parser",
+  "version": "0.0.3",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "fs-extra": "^3.0.0",
+    "mkdirp": "^0.5.1",
+    "yauzl": "^2.7.0"
+  }
+}
