@@ -3,14 +3,9 @@
 ## use
 
 ```javascript
-const fs = require('fs');
 const parser = require('ebook-parser');
-parser('./example.epub', function(err,result) {
-  if(err){
-    console.log(err.message);
-  }else{
+parser('./example.epub', function(result) {
     console.log(result)
-  }
 });
 ```
 output:
@@ -20,16 +15,12 @@ output:
   "name":"西游记",
   "pic":null,
   "categories":[
-
+    {"id":1,"pid":0,"name":"第一部分","index":"part0000_split_001.html"}
   ],
   "contents":[
     {
-    "id":"id00961",
+    "index":"part0000_split_001.html",
     "content":"Guild. We will our ......"
-    },
-    {
-    "id":"id00962",
-    "content":"Rosin. The single......"
     }
   ]
 }

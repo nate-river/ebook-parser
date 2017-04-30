@@ -4,7 +4,7 @@ const yauzl = require("yauzl");
 const mkdirp = require("mkdirp");
 const cheerio = require('cheerio');
 
-
+// 解压epub文件
 function unzipFile(file, fn) {
   const UnzipPath = path.resolve(path.basename(file, '.epub'));
   yauzl.open(file, {
@@ -39,33 +39,29 @@ function unzipFile(file, fn) {
 
 // 根据 content.opf 文件获取所有段落
 function getContents(opfFilePath) {
-  $ = cheerio.load(fs.readFileSync(opfFilePath), {xmlMode: true});
-  var contents = [];
-  var files = $('manifest item[media-type="application/xhtml+xml"]');
+  var $ = cheerio.load(fs.readFileSync(opfFilePath), {xmlMode: true});
 
-  files.each((i, v)=> {
-    var o = path.join(path.dirname(opfFilePath), $(v).attr('href'));
-    $ = cheerio.load(fs.readFileSync(o), {xmlMode: true});
-    $('body p').each((i, v)=> {
-      var p = {
-        id: $(v).attr('id'),
-        content: $(v).text()
-      };
-      contents.push(p);
-    });
-  });
-  return contents;
+  var result = $('itemref').map((i, el)=> {
+    var fileName = $('#' + $(el).attr('idref')).attr('href');
+    var contentFilePath = path.join(path.dirname(opfFilePath), fileName);
+    var xml = cheerio.load(fs.readFileSync(contentFilePath, 'utf-8'), {xmlMode: true});
+    return {
+      index: path.basename(fileName),
+      content: xml('body').html()
+    };
+  }).get();
+  return result;
 }
-// 根据toc.ncx 文件获取图书名
 
+// 根据toc.ncx 文件获取图书名
 function getTitle(ncxFile) {
-  $ = cheerio.load(ncxFile, {xmlMode: true});
+  var $ = cheerio.load(ncxFile, {xmlMode: true});
   return $('docTitle text').text() || null;
 }
 
 // 根据 toc.ncx 文件获取所有章节
 function getCategories(ncxFile) {
-  $ = cheerio.load(ncxFile, {xmlMode: true});
+  var $ = cheerio.load(ncxFile, {xmlMode: true});
   var list = [];
 
   function parseNavPoint(navPoint, id) {
@@ -74,7 +70,7 @@ function getCategories(ncxFile) {
       id: chapterId,
       pid: id,
       name: navPoint.find('>navLabel text').text(),
-      page: navPoint.find('>content').attr('src')
+      index: path.basename(navPoint.find('>content').attr('src'))
     };
     list.push(o);
     if (navPoint.find('>navPoint').length) {
@@ -90,6 +86,7 @@ function getCategories(ncxFile) {
   return list;
 }
 
+// 获取数据
 function fetchData(unzipFilePath) {
   var $;
   // ebook 元信息存储位置 META-INF/container.xml
@@ -111,7 +108,7 @@ function fetchData(unzipFilePath) {
     categories: getCategories(ncxFile),
     contents: getContents(opfFilePath)
   };
-  // fs.removeSync(unzipFilePath);
+  fs.removeSync(unzipFilePath);
   return result;
 }
 
